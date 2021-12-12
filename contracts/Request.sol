@@ -101,14 +101,14 @@ contract Request is Ownable {
     }
 
 
-    function setInsurance(uint256 insurance) external {
+    function setInsurance(uint256 insurance) external onlyOwner {
         _insurance = insurance;
 
         emit SetInsurance(insurance);
     }
 
 
-    function refundOf(uint256 userId) external {
+    function refundOf(uint256 userId) external onlyOwner {
         require(_total < _softCap && block.timestamp > _hardEnd, "No refund");
 
         if (_investors[userId] > 0) {
@@ -122,7 +122,7 @@ contract Request is Ownable {
     }
 
 
-    function refundCompany() external {
+    function refundCompany() external onlyOwner {
         require(_total < _softCap && block.timestamp > _hardEnd, "No company refund");
 
         if (_insurance != 0) {
@@ -134,7 +134,7 @@ contract Request is Ownable {
     }
 
 
-    function withdrawDebt() external {
+    function withdrawDebt() external onlyOwner {
         require(_total >= _softCap && block.timestamp > _hardEnd, "No debt withdraw");
 
         // smth
@@ -143,7 +143,7 @@ contract Request is Ownable {
     }
 
 
-    function topUp(uint256 amount) external {
+    function topUp(uint256 amount) external onlyOwner {
         require(_nextCouponIx < _couponTimestamps.length, "Over");
         require(block.timestamp <= _couponTimestamps[_nextCouponIx], "Overdue...");
         if (block.timestamp > _couponTimestamps[_nextCouponIx]) {
@@ -181,7 +181,7 @@ contract Request is Ownable {
     }
 
 
-    function withdrawCoupon(uint256 userId) external {
+    function withdrawCoupon(uint256 userId) external onlyOwner {
         require(_nextCouponIx < _couponTimestamps.length, "Over");
         require(_nextCouponIx > 0, "Wait....");
         require(!_investorCoupons[userId][_nextCouponIx - 1], "You already have that coupon");
@@ -217,7 +217,7 @@ contract Request is Ownable {
     }
 
 
-    function setLot(uint256 sellerId, uint256 price, uint256 pie) external {
+    function setLot(uint256 sellerId, uint256 price, uint256 pie) external onlyOwner {
         require(pie <= _investors[sellerId], "More than user total pie");
 
         _lots[sellerId] = Lot(price, pie, true);
@@ -226,7 +226,7 @@ contract Request is Ownable {
     }
 
 
-    function removeLot(uint256 sellerId) external {
+    function removeLot(uint256 sellerId) external onlyOwner {
         require(_lots[sellerId].isActive, "Non-active lot");
 
         _lots[sellerId].isActive = false;
@@ -235,7 +235,7 @@ contract Request is Ownable {
     }
 
 
-    function buyLot(uint256 sellerId, uint256 buyerId, bool withInsurance) external {
+    function buyLot(uint256 sellerId, uint256 buyerId, bool withInsurance) external onlyOwner {
         require(_lots[sellerId].isActive, "Non-active lot");
 
         Lot memory lot = _lots[sellerId];
@@ -260,7 +260,7 @@ contract Request is Ownable {
     }
 
 
-    function _endContractInsurance() internal {
+    function _endContractInsurance() internal onlyOwner {
         uint256 insurance_num = 0;
 
         for (uint256 i = 0; i < _investorIds.length; i++) {
