@@ -261,7 +261,6 @@ contract Request is Ownable {
 
 
     function _endContractInsurance() internal onlyOwner {
-        uint256 insurance_num = 0;
 
         for (uint256 i = 0; i < _investorIds.length; i++) {
             if (_investorInsurance[i]) {
